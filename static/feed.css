@@ -1,0 +1,163 @@
+body {
+    font-size: 0.8em;
+
+}
+
+.spoiler::before {
+    content: "Spoiler:";
+    font-size: 80%;
+    color: grey;
+}
+
+.spoiler > p {
+    overflow: hidden;
+}
+
+.spoiler > p > img {
+    filter: blur(0.5em) contrast(0.7);
+}
+
+.spoiler > p > img:hover {
+    filter: none;
+}
+
+.deleted {
+    opacity: .5;
+}
+
+.edited-marker::after {
+    content: " (edited)";
+    font-size: 80%;
+    color: grey;
+}
+
+.message_list {
+    list-style: none;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    margin-top: auto;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.system_message {
+    margin-left: 0.25em;
+}
+
+.attachment {
+    max-height: 10em;
+    max-width: 100%;
+}
+
+.message-text {
+    word-break: break-all;
+}
+
+ul > li:nth-of-type(odd) {
+    background-color: #FAFAFA ;
+}
+
+li {
+    font-family: 'Roboto', sans-serif;
+}
+
+.emoji {
+    width: 1.5em;
+}
+
+.avatar {
+    width: 1.5em;
+    margin-right: 0.25em;
+}
+
+.bot_tag {
+    margin-left: 0.25em;
+    width: 1.5em;
+}
+
+.channel_box {
+    border: lightgray;
+    border-style: solid;
+    border-width: 1px;
+    width: 29em;
+    height: 20em;
+}
+
+.channel_name {
+    font-weight: 700;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.author {
+    padding-right: 0.5em;
+    font-weight: 700;
+    margin-bottom: 0;
+    display: inline;
+    white-space: nowrap;
+}
+
+p {
+    margin-bottom: 0;
+}
+
+.embed {
+    background-color: #F2F3F5;
+    border-style: none none none solid;
+    border-width: 0.25em;
+    border-radius: 0.25em;
+    padding: 0.5em;
+}
+
+.embed_author > a {
+    color: black;
+    text-decoration: none;
+}
+
+.embed_author_icon {
+    border-radius: 50%;
+    width: 1.5em;
+    margin-right: 0.5em;
+}
+
+.embed_field:not(:first-child) {
+    margin-left: 1em;
+}
+
+.embed_title {
+    font-weight: bold;
+}
+
+.embed_title > a {
+    text-decoration: none;
+}
+
+.embed_footer {
+    font-size: 80%;    
+}
+
+.embed_footer_icon {
+    width: 1.5em;
+    margin-right: 0.5em;
+}
+
+.embed_field_inline {
+    display: inline;
+}
+
+.embed_field_title {
+    font-weight: bold;
+}
+
+.video {
+    font-size: 90%;
+    color: grey;
+}
+
+.embed_image {
+    display: block;
+}
