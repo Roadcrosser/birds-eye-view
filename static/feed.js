@@ -53,6 +53,10 @@ function generate_channel_boxes(data) {
     })
 }
 
+function test_link() {
+    window.open(`discord:///channels/@me`, "popUpWindow", 'height=1,width=1,left=0,top=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no, status=no')
+}
+
 function push_new_message(message) {
     let new_li = $("<li></li>");
     new_li.addClass("d-flex");
