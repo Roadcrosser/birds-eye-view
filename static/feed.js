@@ -46,9 +46,10 @@ function generate_channel_boxes(data) {
 
     }
     $(".channel_name").dblclick((event) => {
-        console.log(event.target);
         let w = window.open(`discord:///channels/${data.guild}/${$(event.target).attr("channel_link")}`, "popUpWindow", 'height=1,width=1,left=0,top=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no, status=no')
-        w.close()
+        setTimeout(() => {
+            w.close();
+        }, 100)
     })
 }
 
@@ -59,7 +60,10 @@ function push_new_message(message) {
 
     new_li.dblclick(() => {
         let w = window.open(`discord:///channels/${message.guild}/${message.channel}/${message.id}`, "popUpWindow", 'height=1,width=1,left=0,top=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no, status=no')
-        w.close()
+        setTimeout(() => {
+            w.close();
+        }, 100)
+
     })
 
     if (message.system_content) {
