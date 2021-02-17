@@ -3,7 +3,7 @@ I'll write a description later
 
 ## Usage
 
- - Rename (or copy) `config.sample.json` to `config.json`. Add your token to it.
+ - Rename (or copy) `config.sample.yaml` to `config.yaml`. Add token, guild id and channel id list.
 
  - Run the webapp:
 ```
