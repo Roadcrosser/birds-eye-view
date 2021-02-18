@@ -8,3 +8,7 @@ channel_ids:
     - 9012
     - 3456
     - 7890
+
+shortcut_channel_ids:
+    - 12345
+    - 67890

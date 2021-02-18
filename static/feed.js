@@ -5,7 +5,7 @@ $(function () {
     let ws_protocol = window.location.protocol == "https:" ? "wss:" : "ws:";
     let uri = `${window.location.hostname}:${window.location.port}`;
 
-    fetch("/data").then(response => response.json()).then(data => generate_channel_boxes(data));
+    fetch("/data").then(response => response.json()).then(data => { generate_shortcuts(data.shortcuts); generate_channel_boxes(data); });
 
 
     let websocket = new WebSocket(`${ws_protocol}//${uri}`);
@@ -24,9 +24,22 @@ $(function () {
 
 });
 
+function generate_shortcuts(data) {
+    let shortcuts = $("#shortcut-bar");
+    for (c of data) {
+        let new_bar = $("<div></div>");
+        new_bar.addClass("shortcut linkable");
+        new_bar.attr("channel_link", c.id);
+        new_bar.text(c.name);
+
+        shortcuts.append(new_bar);
+    }
+
+}
+
 function generate_channel_bar(data) {
     let new_bar = $("<div></div>");
-    new_bar.addClass("channel_bar d-flex justify-content-between");
+    new_bar.addClass("channel_bar linkable d-flex justify-content-between");
     new_bar.attr("channel_link", data.id);
 
     let bar_pad_left = $("<div></div>").addClass("bar_pad");
@@ -64,7 +77,7 @@ function generate_channel_boxes(data) {
         $("#main_container").append(new_div);
 
     }
-    $(".channel_bar").dblclick((event) => {
+    $(".linkable").dblclick((event) => {
         let w = window.open(`discord:///channels/${data.guild}/${$(event.target).attr("channel_link")}`, "popUpWindow", 'height=1,width=1,left=0,top=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no, status=no')
         setTimeout(() => {
             w.close();
@@ -143,11 +156,9 @@ function edit_message(payload) {
 }
 
 function channel_update(channel) {
-    console.log(channel)
     let box = $(`#box-${channel.id}`);
     channel.viewable ? box.removeClass("unviewable") : box.addClass("unviewable");
 
-    console.log($(`#${channel.id} > .channel_bar`));
     $(`#bar-${channel.id}`).html(generate_channel_bar(channel));
 }
 

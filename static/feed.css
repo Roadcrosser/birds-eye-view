@@ -3,6 +3,24 @@ body {
 
 }
 
+#shortcut-bar {
+    writing-mode: vertical-lr;
+}
+
+.shortcut {
+
+    border-style: solid;
+    border-color: lightgray;
+    border-width: 1px;
+    padding: 1em;
+
+    height:auto;
+
+    font-weight: 700;
+    line-height: 0;
+    white-space: nowrap;
+}
+
 .bar_pad {
     width: 100%;
 }

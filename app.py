@@ -20,6 +20,7 @@ feeds = set()
 
 guild_id = config["guild_id"]
 channels = config["channel_ids"]
+shortcut_channels = config["shortcut_channel_ids"]
 
 
 @app.route("/")
@@ -35,6 +36,11 @@ async def getdata():
             "channels": [
                 serialize_channel(client.get_guild(guild_id).get_channel(c))
                 for c in channels
+                if client.get_guild(guild_id).get_channel(c)
+            ],
+            "shortcuts": [
+                serialize_channel(client.get_guild(guild_id).get_channel(c))
+                for c in shortcut_channels
                 if client.get_guild(guild_id).get_channel(c)
             ],
         }
