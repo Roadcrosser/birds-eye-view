@@ -1,7 +1,5 @@
 
 $(function () {
-    marked.use({ breaks: true });
-
     let ws_protocol = window.location.protocol == "https:" ? "wss:" : "ws:";
     let uri = `${window.location.hostname}:${window.location.port}`;
 
@@ -163,7 +161,7 @@ function channel_update(channel) {
 }
 
 function format_content(content) {
-    let ret = marked(content);
+    let ret = marked(content.replaceAll("\n", "\n\n"));
     ret = ret.replaceAll(/&lt;a?:(\w+):(\d+)&gt;/g, `<img class="emoji" alt="$1" src="https://cdn.discordapp.com/emojis/$2.png">`);
     ret = twemoji.parse(ret);
 
