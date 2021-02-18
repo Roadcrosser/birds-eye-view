@@ -18,34 +18,53 @@ $(function () {
             case "message_create": push_new_message(payload); break;
             case "message_delete": delete_message(payload); break;
             case "message_edit": edit_message(payload); break;
+            case "channel_update": channel_update(payload); break;
         }
     }
 
 });
 
+function generate_channel_bar(data) {
+    let new_bar = $("<div></div>");
+    new_bar.addClass("channel_bar d-flex justify-content-between");
+    new_bar.attr("channel_link", data.id);
+
+    let bar_pad_left = $("<div></div>").addClass("bar_pad");
+    new_bar.append(bar_pad_left);
+    new_bar.append($("<p></p>").text(`#${data.name}`));
+
+    let bar_pad_right = $("<div></div>").addClass("bar_pad d-flex justify-content-end");
+    if (data.slowmode) {
+        bar_pad_right.addClass("slowmode_timer").text(data.slowmode).addClass("ml-auto").attr("src", "stopwatch.svg").append($("<img>").attr("src", "static/stopwatch.svg"));
+    }
+
+    new_bar.append(bar_pad_right);
+    return new_bar;
+
+}
+
 function generate_channel_boxes(data) {
     for (d of data.channels) {
         let new_div = $("<div></div>");
         new_div.addClass("channel_box d-flex flex-column");
-        let new_p = $("<p></p>");
-        new_p.addClass("channel_name");
-        new_p.text(`#${d[0]}`);
-        new_p.attr("channel_link", d[1]);
+        new_div.attr("id", `box-${d.id}`)
 
-
-        new_div.append(new_p);
+        new_div.append($("<div></div>").attr("id", `bar-${d.id}`).append(generate_channel_bar(d)));
 
         let new_ul = $("<ul></ul>");
-        new_ul.addClass("message_list");
-        new_ul.attr("id", d[1]);
-        new_ul.addClass("align-self-end");
+        new_ul.addClass("message_list align-self-end");
+        new_ul.attr("id", d.id);
+
+        if (!d.viewable) {
+            new_ul.addClass("unviewable");
+        }
 
         new_div.append(new_ul);
 
         $("#main_container").append(new_div);
 
     }
-    $(".channel_name").dblclick((event) => {
+    $(".channel_bar").dblclick((event) => {
         let w = window.open(`discord:///channels/${data.guild}/${$(event.target).attr("channel_link")}`, "popUpWindow", 'height=1,width=1,left=0,top=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no, status=no')
         setTimeout(() => {
             w.close();
@@ -121,6 +140,15 @@ function edit_message(payload) {
         let ul = $(`#${payload.channel}`);
         ul.scrollTop(function () { return this.scrollHeight; });
     }
+}
+
+function channel_update(channel) {
+    console.log(channel)
+    let box = $(`#box-${channel.id}`);
+    channel.viewable ? box.removeClass("unviewable") : box.addClass("unviewable");
+
+    console.log($(`#${channel.id} > .channel_bar`));
+    $(`#bar-${channel.id}`).html(generate_channel_bar(channel));
 }
 
 function format_content(content) {

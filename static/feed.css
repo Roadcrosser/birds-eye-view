@@ -3,6 +3,17 @@ body {
 
 }
 
+.bar_pad {
+    width: 100%;
+}
+
+.slowmode_timer {
+    line-height: 1.3em;
+}
+.unviewable {
+    background-color: #f0a6a1;
+}
+
 .spoiler::before {
     content: "Spoiler:";
     font-size: 80%;
@@ -86,11 +97,13 @@ li {
     height: 20em;
 }
 
-.channel_name {
+.channel_bar {
     font-weight: 700;
     text-align: center;
     padding: 0;
     margin: 0;
+    height: 1.5em;
+    white-space: nowrap;
 }
 
 .author {
@@ -103,6 +116,10 @@ li {
 
 p {
     margin-bottom: 0;
+}
+
+.slowmode_timer {
+    font-weight: normal;
 }
 
 .embed {
