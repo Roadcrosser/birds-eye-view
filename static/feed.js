@@ -76,7 +76,8 @@ function generate_channel_boxes(data) {
 
     }
     $(".linkable").dblclick((event) => {
-        let w = window.open(`discord:///channels/${data.guild}/${$(event.target).attr("channel_link")}`, "popUpWindow", 'height=1,width=1,left=0,top=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no, status=no')
+        let link_url = `discord:///channels/${data.guild}/${$(event.currentTarget).attr("channel_link")}`;
+        let w = window.open(link_url, "popUpWindow", 'height=1,width=1,left=0,top=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no, status=no')
         setTimeout(() => {
             w.close();
         }, 100)
