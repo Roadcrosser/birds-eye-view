@@ -1,3 +1,6 @@
-git+https://github.com/pgjones/quart
-pyyaml
-discord
+pyjwt
+Async-OAuthlib
+quart
+hypercorn
+disnake
+PyYAML

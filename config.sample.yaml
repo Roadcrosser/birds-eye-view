@@ -1,14 +1,21 @@
-token: abalabahaha
+TOKEN: abalabahaha
 
-guild_id: 1234
+ACTIVE_GUILD_ID: 1234
 
-channel_ids:
+SHORTCUT_CHANNEL_IDS:
+    - 12345
+    - 67890
+
+MONITOR_CHANNEL_IDS:
     - 1234
     - 5678
     - 9012
     - 3456
     - 7890
 
-shortcut_channel_ids:
-    - 12345
-    - 67890
+WHITELIST_ROLE_ID: 4567
+
+CLIENT_ID: 1234
+CLIENT_SECRET: abcde
+REDIRECT_URI: https://example.com/callback
+

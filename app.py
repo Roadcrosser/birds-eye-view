@@ -1,47 +1,105 @@
 import json
+import datetime
+
+from DiscordClient import (
+    DiscordClient,
+    serialize_category,
+    serialize_channel,
+)
+from UserFeed import UserFeed
+import auth
+from config import ACTIVE_GUILD_ID, MONITOR_CHANNEL_IDS, SHORTCUT_CHANNEL_IDS, TOKEN
 import asyncio
-import discord
-from quart import Quart, render_template, websocket, copy_current_websocket_context
-
-import yaml
-
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
+from quart import (
+    Quart,
+    request,
+    websocket,
+    abort,
+    redirect,
+    render_template,
+    copy_current_websocket_context,
+)
 
 app = Quart(__name__)
-client = discord.Client(intents=discord.Intents(guilds=True, messages=True))
 
-with open("config.yaml", encoding="utf-8") as o:
-    config = yaml.load(o.read(), Loader=Loader)
+app.feeds = {}
 
-feeds = set()
 
-guild_id = config["guild_id"]
-channels = config["channel_ids"]
-shortcut_channels = config["shortcut_channel_ids"]
+async def push_data(payload, channel):
+    data = json.dumps(payload)
+
+    for ws, userfeed in app.feeds.items():
+        if not userfeed.authenticated:
+            continue
+
+        if not auth.check_user_permissions(userfeed.user_id, channel.guild, channel):
+            continue
+
+        await ws.send(data)
+
+
+app.push_data = push_data
+
+
+@app.before_serving
+async def before_serving():
+    app.discord_client = DiscordClient(app)
+    app.get_guild = lambda: app.discord_client.client.get_guild(ACTIVE_GUILD_ID)
+    app.auth_inst = auth.Auth()
+    await app.auth_inst.initialize()
+    asyncio.get_event_loop().create_task(app.discord_client.client.start(TOKEN))
 
 
 @app.route("/")
 async def index():
-    return await render_template("index.html")
+    return await render_template(
+        "index.html", ts=str(datetime.datetime.utcnow().timestamp())
+    )
 
 
-@app.route("/data")
+@app.route("/login")
+async def login():
+    return redirect(auth.oauth_url())
+
+
+@app.route("/api/refresh")
+async def refresh_token():
+    return await app.auth_inst.refresh_token(request.headers)
+
+
+@app.route("/callback")
+async def callback():
+    return await app.auth_inst.callback(request)
+
+
+@app.route("/api/data")
 async def getdata():
+    guild = app.get_guild()
+    user = UserFeed()
+    user.authenticate(request.headers.get("Authorization", ""), guild)
+    if not user.authenticated:
+        await abort(401)
+
     return json.dumps(
         {
-            "guild": str(guild_id),
+            "guild_id": str(ACTIVE_GUILD_ID),
             "channels": [
-                serialize_channel(client.get_guild(guild_id).get_channel(c))
-                for c in channels
-                if client.get_guild(guild_id).get_channel(c)
+                serialize_channel(app.get_guild().get_channel(c))
+                for c in MONITOR_CHANNEL_IDS
+                if app.get_guild().get_channel(c)
             ],
+            "categories": sorted(
+                {
+                    cat.id: serialize_category(cat)
+                    for c in MONITOR_CHANNEL_IDS
+                    if (cat := app.get_guild().get_channel(c).category)
+                }.values(),
+                key=lambda x: x["position"],
+            ),
             "shortcuts": [
-                serialize_channel(client.get_guild(guild_id).get_channel(c))
-                for c in shortcut_channels
-                if client.get_guild(guild_id).get_channel(c)
+                serialize_channel(app.get_guild().get_channel(c))
+                for c in SHORTCUT_CHANNEL_IDS
+                if app.get_guild().get_channel(c)
             ],
         }
     )
@@ -49,134 +107,29 @@ async def getdata():
 
 async def receiving():
     while True:
-        # We won't be receiving any data so why is this here
         data = await websocket.receive()
+        obj = websocket._get_current_object()
+
+        try:
+            data = json.loads(data)
+        except:
+            return
+
+        if data.get("event", None) == "authenticate" and "payload" in data:
+            app.feeds[obj].authenticate(data["payload"], app.get_guild())
 
 
 @app.websocket("/")
 async def channel_feed_websocket():
     obj = websocket._get_current_object()
 
-    feeds.add(obj)
+    app.feeds[obj] = UserFeed()
 
-    consumer = asyncio.ensure_future(copy_current_websocket_context(receiving)(),)
+    consumer = asyncio.ensure_future(
+        copy_current_websocket_context(receiving)(),
+    )
     try:
         await asyncio.gather(consumer)
     finally:
         consumer.cancel()
-        feeds.remove(obj)
-
-
-@client.event
-async def on_ready():
-    print(
-        f"Bot running: {client.user.name}#{client.user.discriminator} ({client.user.id})"
-    )
-    await app.run_task()
-
-
-def serialize_channel(channel):
-    return {
-        "name": channel.name,
-        "id": str(channel.id),
-        "slowmode": channel.slowmode_delay,
-        "viewable": channel.permissions_for(channel.guild.me).read_messages,
-    }
-
-
-def serialize_embed(embed):
-    return embed.to_dict()
-
-
-def serialize_message(message):
-    return {
-        "id": str(message.id),
-        "content": message.clean_content,
-        "attachments": [m.url for m in message.attachments],
-        "embeds": [serialize_embed(e) for e in message.embeds],
-    }
-
-
-@client.event
-async def on_message(message):
-    if (
-        not message.guild
-        or not message.guild.id == guild_id
-        or not message.channel.id in channels
-    ):
-        return
-
-    data = {
-        "event": "message_create",
-        "payload": {
-            **serialize_message(message),
-            "author": message.author.name,
-            "avatar": str(message.author.avatar_url_as(format="png", size=1024)),
-            "nick": message.author.nick,
-            "color": str(message.author.color),
-            "guild": str(guild_id),
-            "channel": str(message.channel.id),
-            "bot": message.author.bot,
-            "system_content": message.system_content if message.is_system() else None,
-        },
-    }
-
-    await push_data(data)
-
-
-@client.event
-async def on_message_edit(before, after):
-    if (
-        not before.guild
-        or not before.guild.id == guild_id
-        or not before.channel.id in channels
-    ):
-        return
-
-    data = {
-        "event": "message_edit",
-        "payload": {
-            **serialize_message(after),
-            "content_edited": before.content != after.content,
-            "channel": str(before.channel.id),
-        },
-    }
-
-    await push_data(data)
-
-
-@client.event
-async def on_message_delete(message):
-    if (
-        not message.guild
-        or not message.guild.id == guild_id
-        or not message.channel.id in channels
-    ):
-        return
-
-    data = {
-        "event": "message_delete",
-        "payload": {"id": str(message.id),},
-    }
-
-    await push_data(data)
-
-
-@client.event
-async def on_guild_channel_update(before, after):
-    if not after.id in channels:
-        return
-
-    await push_data(
-        {"event": "channel_update", "payload": serialize_channel(after),}
-    )
-
-
-async def push_data(payload):
-    data = json.dumps(payload)
-
-    for ws in feeds:
-        await ws.send(data)
-
-
-client.run(config["token"])
+        app.feeds.pop(obj, None)

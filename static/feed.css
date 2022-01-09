@@ -1,10 +1,134 @@
 body {
     font-size: 0.8em;
+}
 
+body.theme-light {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.theme-dark {
+    background-color: #36393f;
+    color: #ffffff;
+}
+
+body.theme-black {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.catbutton {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+}
+
+.theme-light .catbutton.selected {
+    background-color: black;
+    color: white;
+}
+
+.theme-dark .catbutton.selected {
+    background-color: white;
+    color: black;
+}
+
+.theme-black .catbutton.selected {
+    background-color: white;
+    color: black;
+}
+
+.theme-light .catbutton {
+    border: 1px solid black;
+}
+
+.theme-dark .catbutton {
+    border: 1px solid white;
+}
+
+.theme-black .catbutton {
+    border: 1px solid white;
+}
+
+.sysbutton {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+}
+
+.theme-light .sysbutton {
+    border: 1px solid black;
+}
+
+.theme-dark .sysbutton {
+    border: 1px solid white;
+}
+
+.theme-black .sysbutton {
+    border: 1px solid white;
+}
+
+.logout-icon {
+    transform: scaleX(-1);
+}
+
+.theme-light .sysbutton:hover {
+    background-color: black;
+}
+
+.theme-dark .sysbutton:hover {
+    background-color: white;
+}
+
+.theme-black .sysbutton:hover {
+    background-color: white;
+}
+
+.theme-light .sysbutton:hover span {
+    color: white;
+}
+
+.theme-dark .sysbutton:hover span {
+    color: black;
+}
+
+.theme-black .sysbutton:hover span {
+    color: black;
+}
+
+.material-icons-outlined.stopwatch {
+    font-size: 18px;
+}
+
+.material-icons-outlined.reply-icon {
+    font-size: 10px;
+    margin-right: 4px;
+}
+
+.reply-string {
+    font-size: 10px;
+}
+
+.sidebar {
+    position: fixed;
+    height: 100vh;
 }
 
 #shortcut-bar {
     writing-mode: vertical-lr;
+    width: 0;
+}
+
+#main_container {
+    margin-left: 28px;
 }
 
 .shortcut {
@@ -19,6 +143,8 @@ body {
     font-weight: 700;
     line-height: 0;
     white-space: nowrap;
+
+    user-select: none;
 }
 
 .bar_pad {
@@ -28,6 +154,7 @@ body {
 .slowmode_timer {
     line-height: 1.3em;
 }
+
 .unviewable {
     background-color: #f0a6a1;
 }
@@ -63,6 +190,11 @@ body {
     color: grey;
 }
 
+.sticker-marker {
+    font-size: 90%;
+    color: grey;
+}
+
 .message_list {
     list-style: none;
     margin-bottom: 0;
@@ -89,7 +221,15 @@ body {
 }
 
 ul > li:nth-of-type(odd) {
-    background-color: #FAFAFA ;
+    background-color: rgba(0, 0, 0, 0.030) ;
+}
+
+.theme-dark ul > li:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.065) ;
+}
+
+.theme-black ul > li:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.065) ;
 }
 
 li {
@@ -106,16 +246,25 @@ li {
 }
 
 .bot_tag {
+    vertical-align: initial;
     margin-left: 0.25em;
     width: 1.5em;
 }
 
 .channel_box {
-    border: lightgray;
+    border-color: lightgrey;
     border-style: solid;
     border-width: 1px;
     width: 29em;
     height: 20em;
+}
+
+.theme-dark .channel_box, .theme-dark .shortcut {
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.theme-black .channel_box, .theme-black .shortcut{
+    border-color: rgba(255, 255, 255, 0.8);
 }
 
 .channel_bar {
@@ -125,6 +274,7 @@ li {
     margin: 0;
     height: 1.5em;
     white-space: nowrap;
+    user-select: none;
 }
 
 .author {
@@ -149,6 +299,18 @@ p {
     border-width: 0.25em;
     border-radius: 0.25em;
     padding: 0.5em;
+}
+
+.theme-light .embed {
+    background-color: #F2F3F5;
+}
+
+.theme-dark .embed {
+    background-color: #2F3136;
+}
+
+.theme-black .embed {
+    background-color: #2F3136;
 }
 
 .embed_author > a {
@@ -198,4 +360,23 @@ p {
 
 .embed_image {
     display: block;
+}
+
+.test-button {
+    width: 20px;
+    height: 20px;
+    
+    color: grey;
+}
+
+.modal {
+    color: black;
+}
+
+.modal .material-icons-outlined {
+    margin-right: 2px;
+}
+
+.modal-footer {
+    display: inline;
 }
